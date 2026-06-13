@@ -1,3 +1,5 @@
+use std::fmt::{self, write};
+
 pub struct Config
 {
     pub todo: String,
@@ -52,11 +54,37 @@ enum Status {
     Completed,
 }
 
+impl fmt::Display for Status
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Status::Pending => write!(f, "Pending"),
+            Status::Completed => write!(f, "Completed"),
+        }
+    }
+}
+
 pub struct Task
 {
     pub id: u32,
     pub description: String,
     pub status: Status,
+}
+
+impl Task
+{
+    pub fn info(&self)
+    {
+        let id = self.id;
+        let desc = &self.description;
+        let status = self.status.to_string();
+
+        println!("
+        Id: {id},
+        Status: {status},
+        Description: {desc}
+        ");
+    }
 }
 
 pub struct TodoList
@@ -92,6 +120,13 @@ impl TodoList
         };
 
         self.tasks.push(task)
+    }
+
+    pub fn list_all_tasks(&self)
+    {
+        for task in &self.tasks {
+            task.info();
+        }
     }
 }
 //     fn list_all_tasks() {}
