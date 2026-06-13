@@ -1,5 +1,3 @@
-use core::task;
-
 pub struct Config
 {
     pub todo: String,
