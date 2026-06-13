@@ -1,3 +1,5 @@
+use core::task;
+
 pub struct Config
 {
     pub todo: String,
@@ -47,22 +49,41 @@ pub fn run(config: Config) -> Result<(), &'static str>
     Ok(())
 }
 
-pub struct Task 
+pub struct Task
 {
-    pub id: i32,
+    pub id: u32,
     pub description: String,
     pub done: bool,
 }
-impl Task
+
+pub struct TodoList
 {
-    pub fn create_task(description: String) -> Task {        
-        Task {
-            id: 1,
-            description,
-            done: false,
-        }
+    tasks: Vec<Task>
+}
+
+impl TodoList
+{
+    pub fn generate_id(&self) -> u32
+    {
+        self.tasks
+            .iter()
+            .map(|task| task.id)
+            .max()
+            .unwrap_or(0)
+            + 1
     }
 
+    pub fn create_task(&mut self, description: String)
+    {
+        let task = Task {
+            id: self.generate_id(),
+            description,
+            done: false,
+        };
+
+        self.tasks.push(task)
+    }
+}
 //     fn list_all_tasks() {}
 
 //     fn done_task(task_id: i32) {}
@@ -72,5 +93,3 @@ impl Task
 //     fn search_task(task_id: i32) {}
 
 //     fn get_id() -> usize {}
-
-}
