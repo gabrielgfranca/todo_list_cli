@@ -49,11 +49,16 @@ pub fn run(config: Config) -> Result<(), &'static str>
     Ok(())
 }
 
+enum Status {
+    Pending,
+    Completed,
+}
+
 pub struct Task
 {
     pub id: u32,
     pub description: String,
-    pub done: bool,
+    pub status: Status,
 }
 
 pub struct TodoList
@@ -63,14 +68,21 @@ pub struct TodoList
 
 impl TodoList
 {
-    pub fn generate_id(&self) -> u32
+    pub fn new() -> Self
+    {
+        Self {
+            tasks: Vec::new()
+        }
+    }
+
+    fn generate_id(&self) -> u32
     {
         self.tasks
-            .iter()
-            .map(|task| task.id)
-            .max()
-            .unwrap_or(0)
-            + 1
+                .iter()
+                .map(|task| task.id)
+                .max()
+                .unwrap_or(0)
+                + 1
     }
 
     pub fn create_task(&mut self, description: String)
@@ -78,7 +90,7 @@ impl TodoList
         let task = Task {
             id: self.generate_id(),
             description,
-            done: false,
+            status: Status::Pending,
         };
 
         self.tasks.push(task)
@@ -91,5 +103,3 @@ impl TodoList
 //     fn remove_task(task_id: i32) {}
 
 //     fn search_task(task_id: i32) {}
-
-//     fn get_id() -> usize {}
