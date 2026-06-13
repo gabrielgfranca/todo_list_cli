@@ -1,4 +1,4 @@
-use std::fmt::{self, write};
+use std::fmt;
 
 pub struct Config
 {
@@ -35,7 +35,13 @@ impl Config
 }
 
 pub fn run(config: Config) -> Result<(), &'static str>
-{
+{   
+    // match config.command.as_str() {
+    //     "add" => {},
+    //     "list" => {},
+    //     "done" => {},
+    //     "remove" => {}
+    // }
     match &config.argument {
         Some(description) => {
             println!("Adding task {description}");
@@ -56,7 +62,8 @@ enum Status {
 
 impl fmt::Display for Status
 {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
+    {
         match self {
             Status::Pending => write!(f, "Pending"),
             Status::Completed => write!(f, "Completed"),
@@ -71,19 +78,17 @@ pub struct Task
     pub status: Status,
 }
 
-impl Task
+impl fmt::Display for Task
 {
-    pub fn info(&self)
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
-        let id = self.id;
-        let desc = &self.description;
-        let status = self.status.to_string();
-
-        println!("
-        Id: {id},
-        Status: {status},
-        Description: {desc}
-        ");
+        write!(
+            f,
+            "[{}] {} - {}",
+            self.id,
+            self.status,
+            self.description
+        )
     }
 }
 
@@ -125,14 +130,13 @@ impl TodoList
     pub fn list_all_tasks(&self)
     {
         for task in &self.tasks {
-            task.info();
+            println!("{task}");
         }
     }
 }
-//     fn list_all_tasks() {}
 
-//     fn done_task(task_id: i32) {}
+//     fn complete_task(task_id: i32) {}
 
 //     fn remove_task(task_id: i32) {}
 
-//     fn search_task(task_id: i32) {}
+//     fn find_task(task_id: i32) {}
