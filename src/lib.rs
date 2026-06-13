@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, task};
 
 pub struct Config
 {
@@ -133,10 +133,42 @@ impl TodoList
             println!("{task}");
         }
     }
+
+    pub fn complete_task(&mut self, task_id: u32)
+    {   
+        match self.find_task_mut(task_id) {
+            Some(task) => task.status = Status::Completed,
+            None => eprintln!("Task not found. id: {task_id}"),
+        }
+    }
+
+    pub fn remove_task(&mut self, task_id: u32)
+    {
+        match self.find_task_index(task_id) {
+            Some(index) => { self.tasks.remove(index); }
+            None => eprintln!("Task not found. id: {task_id}"),
+        }
+    }
+
+    pub fn find_task(&self, task_id: u32) -> Option<&Task>
+    {
+        self.tasks
+            .iter()
+            .find(|task| task.id == task_id)
+    }
+
+    pub fn find_task_mut(&mut self, task_id: u32) -> Option<&mut Task>
+    {
+        self.tasks
+            .iter_mut()
+            .find(|task| task.id == task_id)
+    }
+
+    pub fn find_task_index(&self, task_id: u32) -> Option<usize>
+    {
+        self.tasks
+            .iter()
+            .position(|task| task.id == task_id)
+    }
 }
 
-//     fn complete_task(task_id: i32) {}
-
-//     fn remove_task(task_id: i32) {}
-
-//     fn find_task(task_id: i32) {}
