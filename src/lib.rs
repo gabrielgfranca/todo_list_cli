@@ -47,16 +47,21 @@ pub fn run(config: Config) -> Result<(), &'static str>
     Ok(())
 }
 
-// struct Task 
-// {
-//     id: i32,
-//     description: String,
-//     status: String,
-// }
-// impl Task
-// {
-//     // return an task
-//     fn create_task(description: String, status: String) {}
+pub struct Task 
+{
+    pub id: i32,
+    pub description: String,
+    pub done: bool,
+}
+impl Task
+{
+    pub fn create_task(description: String) -> Task {        
+        Task {
+            id: 1,
+            description,
+            done: false,
+        }
+    }
 
 //     fn list_all_tasks() {}
 
@@ -66,4 +71,6 @@ pub fn run(config: Config) -> Result<(), &'static str>
 
 //     fn search_task(task_id: i32) {}
 
-// }
+//     fn get_id() -> usize {}
+
+}
