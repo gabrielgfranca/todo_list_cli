@@ -1,4 +1,4 @@
-use std::{fmt, task};
+use std::fmt;
 
 pub struct Config
 {
@@ -34,28 +34,28 @@ impl Config
     }
 }
 
-pub fn run(config: Config) -> Result<(), &'static str>
+pub fn run(config: Config, todo_list: &mut TodoList) -> Result<(), &'static str>
 {   
-    // match config.command.as_str() {
-    //     "add" => {},
-    //     "list" => {},
-    //     "done" => {},
-    //     "remove" => {}
-    // }
-    match &config.argument {
-        Some(description) => {
-            println!("Adding task {description}");
-        }
+    match config.command.as_str() {
+        "add" => {
+            let description = config
+                .argument
+                .ok_or("Provide a description of the task. Use: todo add <description>")?;
 
-        None => {
-            return Err("Provide a description of the task. Use: todo add <description>")
-        }
+            todo_list.create_task(description);
+
+        },
+        "list" => todo_list.list_all_tasks(),
+        // "done" => {},
+        // "remove" => {}
+        _ => return Err("Unknown command")
     }
 
     Ok(())
 }
 
-enum Status {
+enum Status
+{
     Pending,
     Completed,
 }
