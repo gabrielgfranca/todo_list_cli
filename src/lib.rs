@@ -1,8 +1,15 @@
 use std::fmt;
 
+pub enum Command {
+    Add,
+    List,
+    Done,
+    Remove,
+}
+
 pub struct Config {
     pub todo: String,
-    pub command: String,
+    pub command: Command,
     pub argument: Option<String>,
 }
 
@@ -13,7 +20,13 @@ impl Config {
         }
 
         let todo = args[1].to_lowercase();
-        let command = args[2].to_lowercase();
+        let command = match args[2].to_lowercase().as_str() {
+            "add" => Command::Add,
+            "list" => Command::List,
+            "done" => Command::Done,
+            "remove" => Command::Remove,
+            _ => return Err("Unknown Command")
+        };
 
         // get(3) returns `Some(&String)` if index 3 exists, otherwise `None`.
         // cloned() converts `Option<&String>` into `Option<String>`.
@@ -32,8 +45,8 @@ impl Config {
 }
 
 pub fn run(config: Config, todo_list: &mut TodoList) -> Result<(), &'static str> {
-    match config.command.as_str() {
-        "add" => {
+    match config.command {
+        Command::Add => {
             let description = config
                 .argument
                 .ok_or("Provide a description of the task. Use: todo add <description>")?;
@@ -42,9 +55,9 @@ pub fn run(config: Config, todo_list: &mut TodoList) -> Result<(), &'static str>
 
             
         }
-        "list" => todo_list.list_all_tasks(),
-        // "done" => {},
-        // "remove" => {}
+        Command::List => todo_list.list_all_tasks(),
+        // Command::Done => {},
+        // Command::Remove => {}
         _ => return Err("Unknown command"),
     }
 
