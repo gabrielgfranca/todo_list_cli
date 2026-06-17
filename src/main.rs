@@ -1,6 +1,6 @@
 use std::{
     env,
-    process,
+    process
 };
 
 use todo_list_cli::{
@@ -8,8 +8,7 @@ use todo_list_cli::{
     TodoList
 };
 
-fn main() 
-{
+fn main() {
     let args: Vec<String> = env::args().collect();
 
     let config = Config::build(&args).unwrap_or_else(|err| {
@@ -24,4 +23,3 @@ fn main()
         process::exit(1);
     }
 }
-
