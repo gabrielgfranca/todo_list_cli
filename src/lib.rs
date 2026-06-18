@@ -1,6 +1,6 @@
 use std::{
     fmt,
-    fs
+    fs,
 };
 
 use serde::{
@@ -62,15 +62,27 @@ pub fn run(config: Config) -> Result<(), &'static str> {
                 .ok_or("Provide a description of the task. Use: todo add <\"description\">")?;
             
             todo_list.create_task(description);
-
-            todo_list.save()
-                .map_err(|_|"Failed to save task")?;
         }
-        Command::List => todo_list.list_all_tasks(),
-        // Command::Done => {},
-        // Command::Remove => {}
-        _ => return Err("Unknown command"),
+        
+        Command::List => {
+            todo_list.list_all_tasks()
+        }
+        
+        Command::Done => {
+            let task_id = todo_list.get_task_id(config)?;
+
+            todo_list.complete_task(task_id)?;
+        },
+        
+        Command::Remove => {
+            let task_id = todo_list.get_task_id(config)?;
+
+            todo_list.remove_task(task_id)?;
+        }
     }
+
+    todo_list.save()
+        .map_err(|_|"Failed to save task")?;
 
     Ok(())
 }
@@ -94,7 +106,7 @@ impl fmt::Display for Status {
 pub struct Task {
     pub id: u32,
     pub description: String,
-    pub status: Status,
+    status: Status,
 }
 
 impl fmt::Display for Task {
@@ -146,6 +158,16 @@ impl TodoList {
             + 1
     }
 
+    pub fn get_task_id(&self, config: Config) -> Result<u32, &'static str> {
+        let argument = config.argument.ok_or("Provide task Id")?;
+        
+        let task_id = argument
+                .parse::<u32>()
+                .map_err(|_| "Invalid task id")?;
+
+        Ok(task_id)
+    }
+
     pub fn create_task(&mut self, description: String) {
         let task = Task {
             id: self.generate_id(),
@@ -183,7 +205,7 @@ impl TodoList {
                 self.tasks.remove(index);
                 Ok(())
             }
-            None => return Err("Task not found. id: {task_id}"),
+            None => return Err("Task not found"),
         }
     }
 
