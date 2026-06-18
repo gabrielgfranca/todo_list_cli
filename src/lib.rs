@@ -1,4 +1,12 @@
-use std::fmt;
+use std::{
+    fmt,
+    fs
+};
+
+use serde::{
+    Deserialize,
+    Serialize
+};
 
 pub enum Command {
     Add,
@@ -16,7 +24,7 @@ pub struct Config {
 impl Config {
     pub fn build(args: &[String]) -> Result<Config, &'static str> {
         if args.len() < 3 {
-            return Err("Not enough arguments. Use: todo <command> [argument]");
+            return Err("Not enough arguments. Use: todo <command> [\"argument\"]");
         }
 
         let todo = args[1].to_lowercase();
@@ -33,7 +41,7 @@ impl Config {
         let argument = args.get(3).cloned();
 
         if todo != "todo" {
-            return Err("Invalid command. Use: todo <command> [argument]");
+            return Err("Invalid command. Use: todo <command> [\"argument\"]");
         }
 
         Ok(Config {
@@ -44,16 +52,19 @@ impl Config {
     }
 }
 
-pub fn run(config: Config, todo_list: &mut TodoList) -> Result<(), &'static str> {
+pub fn run(config: Config) -> Result<(), &'static str> {
+    let mut todo_list = TodoList::load();
+
     match config.command {
         Command::Add => {
             let description = config
                 .argument
-                .ok_or("Provide a description of the task. Use: todo add <description>")?;
-
+                .ok_or("Provide a description of the task. Use: todo add <\"description\">")?;
+            
             todo_list.create_task(description);
 
-            
+            todo_list.save()
+                .map_err(|_|"Failed to save task")?;
         }
         Command::List => todo_list.list_all_tasks(),
         // Command::Done => {},
@@ -64,6 +75,7 @@ pub fn run(config: Config, todo_list: &mut TodoList) -> Result<(), &'static str>
     Ok(())
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 enum Status {
     Pending,
     Completed,
@@ -78,6 +90,7 @@ impl fmt::Display for Status {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Task {
     pub id: u32,
     pub description: String,
@@ -90,15 +103,38 @@ impl fmt::Display for Task {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TodoList {
     tasks: Vec<Task>,
 }
 
+const TASKS_FILE_PATH: &str = "tasks.json";
+
 impl TodoList {
+
     pub fn new() -> Self {
         Self {
             tasks: Vec::new()
         }
+    }
+
+    pub fn load() -> Self {
+        match fs::read_to_string(self::TASKS_FILE_PATH) {
+            Ok(content) => {
+                serde_json::from_str(&content)
+                    .unwrap_or_else(|_| Self::new())
+            }
+
+            Err(_) => Self::new(),
+        }
+    }
+
+    pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let json = serde_json::to_string_pretty(self)?;
+
+        fs::write(TASKS_FILE_PATH, json)?;
+
+        Ok(())
     }
 
     fn generate_id(&self) -> u32 {
@@ -121,24 +157,33 @@ impl TodoList {
     }
 
     pub fn list_all_tasks(&self) {
+        if self.tasks.is_empty() {
+            println!("No task found.");
+            return;
+        }
+
         for task in &self.tasks {
             println!("{task}");
         }
     }
 
-    pub fn complete_task(&mut self, task_id: u32) {
+    pub fn complete_task(&mut self, task_id: u32) -> Result<(), &'static str> {
         match self.find_task_mut(task_id) {
-            Some(task) => task.status = Status::Completed,
-            None => eprintln!("Task not found. id: {task_id}"),
+            Some(task) => {
+                task.status = Status::Completed;
+                Ok(())
+            }
+            None => return Err("Task not found"),
         }
     }
 
-    pub fn remove_task(&mut self, task_id: u32) {
+    pub fn remove_task(&mut self, task_id: u32) -> Result<(), &'static str>{
         match self.find_task_index(task_id) {
             Some(index) => {
                 self.tasks.remove(index);
+                Ok(())
             }
-            None => eprintln!("Task not found. id: {task_id}"),
+            None => return Err("Task not found. id: {task_id}"),
         }
     }
 
