@@ -3,7 +3,10 @@ use std::{
     process
 };
 
-use todo_list_cli::Config;
+use todo_list_cli::{
+    cli::cli::Config,
+    app::app,   
+};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -13,7 +16,7 @@ fn main() {
         process::exit(1);
     });
 
-    if let Err(err) = todo_list_cli::run(config) {
+    if let Err(err) = app::run(config) {
         eprintln!("Aplication error: {err}");
         process::exit(1);
     }
