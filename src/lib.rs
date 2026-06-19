@@ -12,6 +12,7 @@ pub enum Command {
     Add,
     List,
     Done,
+    Undone,
     Remove,
 }
 
@@ -32,6 +33,7 @@ impl Config {
             "add" => Command::Add,
             "list" => Command::List,
             "done" => Command::Done,
+            "undone" => Command::Undone,
             "remove" => Command::Remove,
             _ => return Err("Unknown Command")
         };
@@ -71,8 +73,14 @@ pub fn run(config: Config) -> Result<(), &'static str> {
         Command::Done => {
             let task_id = todo_list.get_task_id(config)?;
 
-            todo_list.complete_task(task_id)?;
+            todo_list.done_task(task_id)?;
         },
+
+        Command::Undone => {
+            let task_id = todo_list.get_task_id(config)?;
+
+            todo_list.undone_task(task_id)?;
+        }
         
         Command::Remove => {
             let task_id = todo_list.get_task_id(config)?;
@@ -189,10 +197,20 @@ impl TodoList {
         }
     }
 
-    pub fn complete_task(&mut self, task_id: u32) -> Result<(), &'static str> {
+    pub fn done_task(&mut self, task_id: u32) -> Result<(), &'static str> {
         match self.find_task_mut(task_id) {
             Some(task) => {
                 task.status = Status::Completed;
+                Ok(())
+            }
+            None => return Err("Task not found"),
+        }
+    }
+
+    pub fn undone_task(&mut self, task_id: u32) -> Result<(), &'static str> {
+        match self.find_task_mut(task_id) {
+            Some(task) => {
+                task.status = Status::Pending;
                 Ok(())
             }
             None => return Err("Task not found"),
