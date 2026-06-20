@@ -13,6 +13,7 @@ This project focuses on applying Rust fundamentals in a real application, includ
 * Serialization and Deserialization with Serde
 * Command-Line Argument Parsing
 * Project Organization and Refactoring
+* Iterators and closures
 
 ## Features
 
