@@ -1,11 +1,16 @@
+/// Application layer.
+///
+/// Responsible for coordinating the application workflow:
+/// loading tasks, executing commands, and saving changes.
+
 
 use crate::{
-    cli::cli::{
+    cli::{
         Config,
         Command
     },
     
-    todo_list::todo_list::TodoList
+    todo_list::TodoList
 };
 
 pub fn run(config: Config) -> Result<(), &'static str> {

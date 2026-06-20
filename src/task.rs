@@ -1,36 +1,39 @@
-pub mod task {
-    use std::fmt;
-    
-    use serde::{
-        Deserialize,
-        Serialize
-    };
+/// Task domain models.
+///
+/// Defines the task and status types used throughout the application,
+/// along with their display representations.
 
-    #[derive(Debug, Serialize, Deserialize)]
-    pub enum Status {
-        Pending,
-        Completed,
-    }
+use std::fmt;
 
-    impl fmt::Display for Status {
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                match self {
-                Status::Pending => write!(f, "Pending"),
-                Status::Completed => write!(f, "Completed"),
-            }
+use serde::{
+    Deserialize,
+    Serialize
+};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Status {
+    Pending,
+    Completed,
+}
+
+impl fmt::Display for Status {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            match self {
+            Status::Pending => write!(f, "Pending"),
+            Status::Completed => write!(f, "Completed"),
         }
     }
+}
 
-    #[derive(Debug, Serialize, Deserialize)]
-    pub struct Task {
-        pub id: u32,
-        pub description: String,
-        pub status: Status,
-    }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Task {
+    pub id: u32,
+    pub description: String,
+    pub status: Status,
+}
 
-    impl fmt::Display for Task {
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                write!(f, "[{}] {} - {}", self.id, self.status, self.description)
-        }
+impl fmt::Display for Task {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "[{}] {} - {}", self.id, self.status, self.description)
     }
 }

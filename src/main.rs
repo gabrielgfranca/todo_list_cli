@@ -1,11 +1,19 @@
+/// Application entry point.
+///
+/// Responsible for:
+/// - Collecting command-line arguments.
+/// - Building the application configuration.
+/// - Starting the application workflow.
+/// - Handling and reporting errors.
+
 use std::{
     env,
     process
 };
 
 use todo_list_cli::{
-    cli::cli::Config,
-    app::app,   
+    cli::Config,
+    app,   
 };
 
 fn main() {
