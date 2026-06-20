@@ -1,6 +1,6 @@
 # Todo List CLI
 
-A simple command-line Todo List application written in Rust for learning and practicing core Rust concepts after completing Chapter 12 of *The Rust Programming Language*.
+A simple command-line Todo List application written in Rust for learning and practicing core Rust concepts after completing Chapter 13 of *The Rust Programming Language*.
 
 This project focuses on applying Rust fundamentals in a real application, including:
 
